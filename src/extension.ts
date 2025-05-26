@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 import { parseTTS } from "./parse";
 import { log } from 'console';
 
+let myStatusBarItem: vscode.StatusBarItem;
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -18,19 +20,25 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposableParse = vscode.commands.registerCommand('test.parse', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		// let workspaceFolders = vscode.workspace.workspaceFolders;
-		// if (workspaceFolders) {
-		// 	let inf = workspaceFolders[0];
-		// 	// vscode.window.showInformationMessage(`当前工作区目录是: ${inf.uri.fsPath}`); 
-			
-		// }
-		parseTTS();
+		let workspaceFolders = vscode.workspace.workspaceFolders;
+		if (workspaceFolders) {
+			let inf = workspaceFolders[0];
+			vscode.window.showInformationMessage(`当前工作区目录是: ${inf.uri.fsPath}`);
+
+		}
+		// parseTTS();
 		// const mySetting = vscode.workspace.getConfiguration().get('test.demo_setting');
 		// vscode.window.showInformationMessage('test.demo_setting : '+mySetting);
 	});
-	
+
 	context.subscriptions.push(disposableParse);
+
+	myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	myStatusBarItem.text = "鱼塘建造中...";
+	myStatusBarItem.command = "test.parse";
+	context.subscriptions.push(myStatusBarItem);
+	myStatusBarItem.show();
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
