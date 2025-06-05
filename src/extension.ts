@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { parseTTS } from "./parse";
+import { parseTTS } from "./parse_cdk";
 import { log } from 'console';
 
 let myStatusBarItem: vscode.StatusBarItem;
@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(`当前工作区目录是: ${inf.uri.fsPath}`);
 
 		}
-		// parseTTS();
+		parseTTS();
 		// const mySetting = vscode.workspace.getConfiguration().get('test.demo_setting');
 		// vscode.window.showInformationMessage('test.demo_setting : '+mySetting);
 	});
