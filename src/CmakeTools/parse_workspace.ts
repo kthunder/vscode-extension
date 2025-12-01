@@ -80,7 +80,7 @@ export async function generateCMakeFromConfig(extensionPath: string): Promise<st
     });
 
 
-    const templatePath = path.join(extensionPath, 'CMakeLists.cmake');
+    const templatePath = path.join(extensionPath, 'templates', 'CMakeLists.cmake');
     const templateContent = await fs.promises.readFile(templatePath, 'utf8');
     
     const data = {
