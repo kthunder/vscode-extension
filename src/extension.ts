@@ -2,9 +2,11 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { parseTTS } from "./parse_cdk";
+import { generateCMakeFromConfig, writeCMakeFile } from "./parse_workspace";
 import { log } from 'console';
 
 let myStatusBarItem: vscode.StatusBarItem;
+let genCmakesBarItem: vscode.StatusBarItem;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -31,7 +33,23 @@ export function activate(context: vscode.ExtensionContext) {
 		// vscode.window.showInformationMessage('test.demo_setting : '+mySetting);
 	});
 
+	let disposableGenCMake = vscode.commands.registerCommand('test.genCMake', async () => {
+		try {
+			const cmake = await generateCMakeFromConfig(context.extensionPath);
+			await writeCMakeFile(cmake);
+		} catch (error) {
+			vscode.window.showErrorMessage(`生成CMake失败: ${error}`);
+		}
+	});
+
 	context.subscriptions.push(disposableParse);
+	// context.subscriptions.push(disposableGenCMake);
+
+	genCmakesBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+	genCmakesBarItem.text = "生成";
+	genCmakesBarItem.command = "test.genCMake";
+	context.subscriptions.push(genCmakesBarItem);
+	genCmakesBarItem.show();
 
 	myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	myStatusBarItem.text = "鱼塘建造中...";
