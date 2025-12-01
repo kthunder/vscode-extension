@@ -1,9 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { parseTTS } from "./parse_cdk";
-import { generateCMakeFromConfig, writeCMakeFile } from "./parse_workspace";
+import { parseTTS } from "./CmakeTools/parse_cdk";
+import { generateCMakeFromConfig, writeCMakeFile } from "./CmakeTools/parse_workspace";
 import { log } from 'console';
+import { HexReadonlyEditor } from './IntelHexViewer/hexReadonlyEditor';
 
 let myStatusBarItem: vscode.StatusBarItem;
 let genCmakesBarItem: vscode.StatusBarItem;
@@ -56,6 +57,9 @@ export function activate(context: vscode.ExtensionContext) {
 	myStatusBarItem.command = "test.parse";
 	context.subscriptions.push(myStatusBarItem);
 	myStatusBarItem.show();
+
+	// hex preview
+	context.subscriptions.push(HexReadonlyEditor.register(context));
 }
 
 // This method is called when your extension is deactivated

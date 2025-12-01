@@ -32,6 +32,18 @@
         "command": "test.genCMake",
         "title": "生成CMakeLists.txt"
       }
+    ],
+    "customEditors": [
+      {
+        "viewType": "hexViewer.preview",
+        "displayName": "Intel HEX Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.hex"
+          }
+        ],
+        "priority": "default"
+      }
     ]
   },
   "scripts": {
