@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
@@ -75,7 +77,8 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "xml2js": "^0.6.2",
-    "nunjucks": "^3.2.4"
+    "glob": "^13.0.0",
+    "nunjucks": "^3.2.4",
+    "xml2js": "^0.6.2"
   }
 }

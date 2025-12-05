@@ -2,20 +2,28 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nunjucks from 'nunjucks';
+import { glob } from 'glob';
 
 interface ToolConfig {
-    projectName?: string;
-    definitions?: string[];
-    sourceSearchDirs?: string[];
-    includeSearchDirs?: string[];
-    excludeFiles?: string[];
-    excludeIncludeDirs?: string[];
-    linkLibs?: string[];
-    processType?: string[];
-    toolchainPath?: string[];
-    toolchainPerfix?:string[];
-    compileOptions?: string[];
-    linkOptions?: string[];
+    project?: {
+        name?: string;
+        sources?: {
+            files?: string[];
+            exclude?: string[];
+        };
+        includes?: {
+            searchDirs?: string[];
+            exclude?: string[];
+        };
+        definitions?: string[];
+        libraries?: string[];
+    };
+    toolchain?: {
+        pathAndPrefix?: string;
+        processType?: string;
+        compileOptions?: string[];
+        linkOptions?: string[];
+    };
 }
 
 async function loadToolConfig(rootPath: string): Promise<ToolConfig> {
@@ -63,6 +71,20 @@ async function findHeaderDirs(rootPath: string, searchDirs: string[]): Promise<s
     return Array.from(headerDirs);
 }
 
+async function resolveSourceFiles(rootPath: string, patterns: string[]): Promise<string[]> {
+    const files = new Set<string>();
+    for (let pattern of patterns) {
+        // "Lib/*.c" -> "Lib/**/*.c" (递归)
+        // "Src/main.c" -> "Src/main.c" (精确)
+        if (pattern.includes('/*.')) {
+            pattern = pattern.replace(/\/\*\./g, '/**/*.');
+        }
+        const matches = await glob(pattern, { cwd: rootPath, nodir: true, windowsPathsNoEscape: true });
+        matches.forEach(f => files.add(f.replace(/\\/g, '/')));
+    }
+    return Array.from(files);
+}
+
 export async function generateCMakeFromConfig(extensionPath: string): Promise<string> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) throw new Error('未打开工作区');
@@ -70,31 +92,30 @@ export async function generateCMakeFromConfig(extensionPath: string): Promise<st
     const rootPath = workspaceFolders[0].uri.fsPath;
     const config = await loadToolConfig(rootPath);
 
-    const includeSearchDirs = await findHeaderDirs(rootPath, config.includeSearchDirs || []);
-
-    // 处理注释：匹配到的路径前加 #
-    const excludeIncludeDirs = config.excludeIncludeDirs || [];
+    const includeSearchDirs = await findHeaderDirs(rootPath, config.project?.includes?.searchDirs || []);
+    const excludeIncludeDirs = config.project?.includes?.exclude || [];
     const includeDirsFormatted = includeSearchDirs.map(dir => {
         const shouldComment = excludeIncludeDirs.some(exclude => dir.includes(exclude));
         return shouldComment ? `# \${CMAKE_SOURCE_DIR}/${dir}` : `\${CMAKE_SOURCE_DIR}/${dir}`;
     });
 
+    let sourceFiles = await resolveSourceFiles(rootPath, config.project?.sources?.files || []);
+    const excludeFiles = await resolveSourceFiles(rootPath, config.project?.sources?.exclude || []);
+    sourceFiles = sourceFiles.filter(f => !excludeFiles.includes(f));
 
     const templatePath = path.join(extensionPath, 'templates', 'CMakeLists.cmake');
     const templateContent = await fs.promises.readFile(templatePath, 'utf8');
     
     const data = {
-        projectName: config.projectName || 'app',
-        definitions: config.definitions || [],
+        projectName: config.project?.name || 'app',
+        definitions: config.project?.definitions || [],
         includeDirs: includeDirsFormatted,
-        sourceDirs: config.sourceSearchDirs || [],
-        excludeFiles: config.excludeFiles || [],
-        linkLibs: config.linkLibs || [],
-        processType: config.processType,
-        toolchainPath: config.toolchainPath,
-        toolchainPerfix: config.toolchainPerfix,
-        compileOptions: config.compileOptions,
-        linkOptions: config.linkOptions
+        sourceFiles,
+        linkLibs: config.project?.libraries || [],
+        processType: config.toolchain?.processType,
+        toolchainPerfix: config.toolchain?.pathAndPrefix,
+        compileOptions: config.toolchain?.compileOptions,
+        linkOptions: config.toolchain?.linkOptions
     };
 
     return nunjucks.renderString(templateContent, data);

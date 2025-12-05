@@ -32,8 +32,7 @@ set(CMAKE_CXX_COMPILER_FORCED TRUE)
 set(CMAKE_C_COMPILER_ID GNU)
 set(CMAKE_CXX_COMPILER_ID GNU)
 
-set(TOOLCHAIN_PATH                  {{ toolchainPath }})
-set(TOOLCHAIN_PREFIX                ${TOOLCHAIN_PATH}{{ toolchainPerfix }})
+set(TOOLCHAIN_PREFIX                {{ toolchainPerfix }})
 
 set(CMAKE_C_COMPILER                ${TOOLCHAIN_PREFIX}gcc.exe)
 set(CMAKE_CXX_COMPILER              ${TOOLCHAIN_PREFIX}g++.exe)
@@ -96,25 +95,11 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 ###############################################################################
 
 # Add sources to executable
-file(GLOB_RECURSE SOURCES
-{%- for src in sourceDirs %}
-    ${CMAKE_SOURCE_DIR}/{{ src }}/*.[c|s|S]
-{%- endfor %}
-)
-{%- if excludeFiles %}
-file(GLOB_RECURSE EXLUDE_FILES
-{%- for exc in excludeFiles %}
-    ${CMAKE_SOURCE_DIR}/{{ exc }}
-{%- endfor %}
-)
-list(REMOVE_ITEM SOURCES
-    ${EXLUDE_FILES}
-)
-{%- endif %}
-
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    ${SOURCES}
+{%- for file in sourceFiles %}
+    ${CMAKE_SOURCE_DIR}/{{ file }}
+{%- endfor %}
 )
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
