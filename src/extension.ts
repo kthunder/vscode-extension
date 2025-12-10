@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('test.cmakeBuild', async () => {
 		const terminal = getCMakeTerminal();
 		terminal.show();
-		terminal.sendText('cmake --build build -j12');
+		terminal.sendText('cmake -S . -B build -G "Ninja" && cmake --build build -j12');
 	});
 
 	vscode.commands.registerCommand('test.cmakeRebuild', async () => {
