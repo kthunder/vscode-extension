@@ -3,7 +3,8 @@
 'use strict';
 
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+// CMake 工具暂不参与编译，templates 不再拷贝；恢复时取消下面这行注释
+// const CopyPlugin = require('copy-webpack-plugin');
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -45,12 +46,14 @@ const extensionConfig = {
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
   },
+  // 注意：CMake 工具（src/CmakeTools + templates/）暂时不参与编译，
+  // 所以这里不再拷贝 templates 目录。恢复时把下面的 CopyPlugin 重新加回来。
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: 'templates', to: 'templates' }
-      ]
-    })
+    // new CopyPlugin({
+    //   patterns: [
+    //     { from: 'templates', to: 'templates' }
+    //   ]
+    // })
   ]
 };
 module.exports = [ extensionConfig ];

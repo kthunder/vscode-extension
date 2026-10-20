@@ -3,8 +3,13 @@
   "displayName": "test",
   "description": "插件开发测试",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kthunder/vscode-extension.git"
+  },
   "engines": {
-    "vscode": "^1.89.0"
+    "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
@@ -14,6 +19,16 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "workbuddy",
+        "displayName": "WorkBuddy (CN)"
+      },
+      {
+        "vendor": "workbuddy-global",
+        "displayName": "WorkBuddy (Global)"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "test extension demo",
@@ -31,8 +46,8 @@
         "title": "Parse"
       },
       {
-        "command": "test.genCMake",
-        "title": "生成CMakeLists.txt"
+        "command": "workbuddy.showStatus",
+        "title": "WorkBuddy: 显示登录态/诊断信息"
       }
     ],
     "customEditors": [
@@ -63,7 +78,7 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/nunjucks": "^3.2.6",
-    "@types/vscode": "^1.89.0",
+    "@types/vscode": "^1.104.0",
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",

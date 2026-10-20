@@ -12,3 +12,19 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+
+# --- CMake 工具暂时不参与编译（源码保留，不打包） ---
+# 恢复 CMake 功能时删掉下面三行
+templates/**
+tools.json
+src/CmakeTools/**
+
+# --- 调试临时目录与本地构建产物 ---
+.tmp-c3/**
+.tmp-*/**
+
+# --- 已打好的 vsix 不该再进包 ---
+*.vsix
+
+# --- git 元数据 ---
+.git/**

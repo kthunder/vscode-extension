@@ -7,10 +7,26 @@
 		],
 		"sourceMap": true,
 		"rootDir": "src",
-		"strict": true   /* enable all strict type-checking options */
+		"strict": true,   /* enable all strict type-checking options */
+		/* 显式声明全局类型：lib 只有 ES2022，不含 DOM，
+		   console / process / Buffer / setTimeout 等 Node 全局来自 @types/node。
+		   显式写出来可以避免编辑器 TS 服务漏加载 @types/node 时console 未定义。 */
+		"types": [
+			"node",
+			"vscode",
+			"mocha"
+		]
 		/* Additional Checks */
 		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
-	}
+	},
+	/* CMake 工具暂时不参与编译：源码保留，从 tsc 的编译列表中排除。
+	   需要恢复时删掉下面这段 exclude 即可。 */
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"src/CmakeTools"
+	]
 }
